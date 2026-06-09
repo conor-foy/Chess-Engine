@@ -45,7 +45,86 @@ class GameState:
 
 
     def validRookMoves(self, row, col, moves):
-        pass
+
+        colour = self.Board[row][col][0]
+        
+        # row case up
+        for i in range(row + 1, 8):
+
+            position = self.Board[i][col]
+
+            if position == "__":
+                
+                moves.append( Moves((row, col), (i, col), self.Board) )
+
+            elif position != colour:
+
+                moves.append( Moves((row, col), (i, col), self.Board) )
+                break
+
+            # same colour
+            else:
+
+                break
+
+        
+        # row case down
+        for i in range(row - 1, -1, -1):
+
+            position = self.Board[i][col]
+
+            if position == "__":
+                
+                moves.append( Moves((row, col), (i, col), self.Board) )
+
+            elif position != colour:
+
+                moves.append( Moves((row, col), (i, col), self.Board) )
+                break
+
+            # same colour
+            else:
+
+                break
+
+        # col case right
+        for j in range(col + 1, 8):
+
+            position = self.Board[row][j]
+
+            if position == "__":
+                
+                moves.append( Moves((row, col), (row, j), self.Board) )
+
+            elif position != colour:
+
+                moves.append( Moves((row, col), (row, j), self.Board) )
+                break
+
+            # same colour
+            else:
+
+                break
+
+        # col case left
+        for j in range(col - 1, -1, -1):
+
+            position = self.Board[row][j]
+
+            if position == "__":
+                
+                moves.append( Moves((row, col), (row, j), self.Board) )
+
+            elif position != colour:
+
+                moves.append( Moves((row, col), (row, j), self.Board) )
+                break
+
+            # same colour
+            else:
+
+                break
+
 
     def validKnightMoves(self, row, col, moves):
 
