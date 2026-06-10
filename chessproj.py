@@ -25,14 +25,26 @@ class GameState:
             ["wP","wP","wP","wP","wP","wP","wP","wP"],
             ["wR","wN","wB","wQ","wK","wB","wN","wR"],
         ]
+
         self.whiteMove = True
         self.moveLog = []
+
+        self.whiteKingPosition = (7, 4)
+        self.blacKingPosition = (0, 4)
 
 
     def makeMove(self, move):
         
         self.Board[move.startRow][move.startCol] = "__"
         self.Board[move.newRow][move.newCol] = move.movedPiece
+
+        if self.Board[move.startRow][move.startCol] == "wK":
+
+            self.whiteKingPosition = (move.newRow, move.newCol)
+            
+        elif self.Board[move.startRow][move.startCol] == "bK":
+                
+            self.blackKingPosition = (move.newRow, move.newCol)
 
         self.moveLog.append(move)
         self.whiteMove = not self.whiteMove # swap move colour
@@ -41,6 +53,14 @@ class GameState:
     def undoMove(self):
 
         lastMove = self.moveLog.pop()
+
+        if lastMove.movedPiece == "wK":
+
+            self.whiteKingPosition = (lastMove.startRow, lastMove.startCol)
+            
+        elif lastMove.movedPiece == "bK":
+                
+            self.blackKingPosition = (lastMove.startRow, lastMove.startCol)
 
         self.Board[lastMove.newRow][lastMove.newCol] = lastMove.capturedPiece
         self.Board[lastMove.startRow][lastMove.startCol] = lastMove.movedPiece
@@ -235,7 +255,7 @@ class GameState:
 
         startRow = row
         startCol = col
-
+        
         colour = self.Board[row][col][0]
 
         for rowChange, colChange in diagonals:
@@ -247,9 +267,18 @@ class GameState:
 
                 position = self.Board[row + rowChange][col + colChange]
 
-                if position != "__" or position[0] != colour:
+                if position == "__":
 
                     moves.append(Moves( (startRow, startCol), (row + rowChange, col + colChange), self.Board))
+
+                if position != "__" and position[0] != colour:
+
+                    moves.append(Moves( (startRow, startCol), (row + rowChange, col + colChange), self.Board))
+                    break
+                
+                if position[0] == colour:
+
+                    break
 
                 row += rowChange
                 col += colChange
@@ -316,19 +345,43 @@ class GameState:
         return moves
 
 
+    def attackedSquare(self, row, col):
+
+        # change colour to get valid moves of enemy
+        self.whiteMove = not self.whiteMove
+
+        enemyMoves = self.validMoves()
+
+        # change back
+        self.whiteMove = not self.whiteMove
+
+        for move in enemyMoves:
+
+            if (move.newRow, move.newCol) == (row, col):
+
+                return True
+            
+        return False
+
+
+    def inCheck(self):
+
+        if self.whiteMove:
+
+            return self.attackedSquare(self.whiteKingPosition[0], self.whiteKingPosition[1])
+        
+        else:
+
+            return self.attackedSquare(self.blackKingPosition[0], self.blackKingPosition[1])
+        
+
+
+
 if __name__ == "__main__":
 
     gameState = GameState()
     gameState.printBoard()
 
-    moves = gameState.validMoves()
-    gameState.makeMove(moves[0])
-    print("After move:")
-    gameState.printBoard()
-
-    gameState.undoMove()
-    print("After undo:")
-    gameState.printBoard()
     
     
     
