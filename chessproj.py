@@ -196,26 +196,26 @@ class GameState:
     def validKnightMoves(self, row, col, moves):
 
         offsetCombos = [(-2,-1), (-2, 1), (2, -1), (2, 1), (-1, -2), (1, -2), (-1, 2), (1, 2)]
+        colour = self.Board[row][col][0]
 
         for rowOffSet, colOffset in offsetCombos:
 
-            currRow = row + rowOffSet
-            currCol = col + colOffset
+            if 0 <= row + rowOffSet <= 7 and 0 <= col + colOffset <= 7:
 
-            if 0 <= currRow <= 7 and 0 <= currCol <= 7:
+                position = self.Board[row + rowOffSet][col + colOffset]
 
-                availableMove = self.Board[currRow][currCol]
+                if position == "__" or position[0] != colour:
 
-                if availableMove[0] != self.Board[row][col][0]:
-
-                    moves.append( Moves((row, col), (currRow, currCol), self.Board) )
+                    moves.append( Moves((row, col), (row + rowOffSet, col + colOffset), self.Board) )
 
 
     def validBishopMoves(self, row, col, moves):
         
         diagonals = [(1, -1), (1, 1), (-1, -1), (-1, 1)]
+
         startRow = row
         startCol = col
+
         colour = self.Board[row][col][0]
 
         for rowChange, colChange in diagonals:
@@ -227,18 +227,9 @@ class GameState:
 
                 position = self.Board[row + rowChange][col + colChange]
 
-                if position == "__":
+                if position != "__" or position[0] != colour:
 
                     moves.append(Moves( (startRow, startCol), (row + rowChange, col + colChange), self.Board))
-
-                if position != "__" and position[0] != colour:
-
-                    moves.append(Moves( (startRow, startCol), (row + rowChange, col + colChange), self.Board))
-                    break
-                
-                if position[0] == colour:
-
-                    break
 
                 row += rowChange
                 col += colChange
@@ -249,10 +240,24 @@ class GameState:
         self.validRookMoves(row, col, moves)
         self.validBishopMoves(row, col, moves)
 
-    def validKingMoves(self, row, col, moves):
-        pass
 
-    def validMoves(self):
+    def validKingMoves(self, row, col, moves):
+
+        offsetCombos = [(-1,0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
+        colour = self.Board[row][col][0]
+
+        for rowChange, colChange in offsetCombos:
+
+            if 0 <= row + rowChange <= 7 and 0 <= col + colChange <= 7:
+
+                position = self.Board[row + rowChange][col + colChange]
+
+                if position == "__" or position[0] != colour:
+
+                    moves.append(Moves( (row, col), (row + rowChange, col + colChange), self.Board))
+
+
+    def getValidMoves(self):
 
         moves = []
 
@@ -295,6 +300,41 @@ class GameState:
 if __name__ == "__main__":
 
     gameState = GameState()
+
+    for r in range(8):
+        for c in range(8):
+            gameState.Board[r][c] = "__"
+    
+    gameState.Board[4][4] = "wK"
+    
+    moves = []
+    gameState.validKingMoves(4, 4, moves)
+    print(f"Number of moves: {len(moves)}")
+    for move in moves:
+        print(f"({move.startRow}, {move.startCol}) -> ({move.newRow}, {move.newCol})")
+
+    # corner test
+    for r in range(8):
+        for c in range(8):
+            gameState.Board[r][c] = "__"
+
+    gameState.Board[0][0] = "wK"
+    moves = []
+    gameState.validKingMoves(0, 0, moves)
+    print(f"Corner moves: {len(moves)}")  # should be 3
+
+    # blocking test
+    for r in range(8):
+        for c in range(8):
+            gameState.Board[r][c] = "__"
+
+    gameState.Board[4][4] = "wK"
+    gameState.Board[3][3] = "wP"  # friendly - should not appear
+    gameState.Board[5][5] = "bP"  # enemy - should appear
+    moves = []
+    gameState.validKingMoves(4, 4, moves)
+    print(f"Blocking moves: {len(moves)}")  # should be 7
+
     gameState.printBoard()
     
     
