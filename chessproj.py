@@ -57,7 +57,7 @@ class GameState:
                 
                 moves.append( Moves((row, col), (i, col), self.Board) )
 
-            elif position != colour:
+            elif position[0] != colour:
 
                 moves.append( Moves((row, col), (i, col), self.Board) )
                 break
@@ -77,7 +77,7 @@ class GameState:
                 
                 moves.append( Moves((row, col), (i, col), self.Board) )
 
-            elif position != colour:
+            elif position[0] != colour:
 
                 moves.append( Moves((row, col), (i, col), self.Board) )
                 break
@@ -96,7 +96,7 @@ class GameState:
                 
                 moves.append( Moves((row, col), (row, j), self.Board) )
 
-            elif position != colour:
+            elif position[0] != colour:
 
                 moves.append( Moves((row, col), (row, j), self.Board) )
                 break
@@ -115,7 +115,7 @@ class GameState:
                 
                 moves.append( Moves((row, col), (row, j), self.Board) )
 
-            elif position != colour:
+            elif position[0] != colour:
 
                 moves.append( Moves((row, col), (row, j), self.Board) )
                 break
@@ -124,7 +124,7 @@ class GameState:
             else:
 
                 break
-
+        
 
     def validKnightMoves(self, row, col, moves):
 
