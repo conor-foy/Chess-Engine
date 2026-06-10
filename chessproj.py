@@ -39,7 +39,6 @@ class GameState:
         print("_______________________")
 
 
-
     def validPawnMoves(self, row, col, moves):
 
         position = self.Board[row][col]
@@ -110,7 +109,6 @@ class GameState:
                 if self.Board[row + 1][col + 1][0] == "w":
 
                     moves.append( Moves((row, col), (row + 1, col + 1), self.Board) )
-
 
 
     def validRookMoves(self, row, col, moves):
@@ -246,9 +244,10 @@ class GameState:
                 col += colChange
 
 
-
     def validQueenMoves(self, row, col, moves):
-        pass
+        
+        self.validRookMoves(row, col, moves)
+        self.validBishopMoves(row, col, moves)
 
     def validKingMoves(self, row, col, moves):
         pass
@@ -298,5 +297,5 @@ if __name__ == "__main__":
     gameState = GameState()
     gameState.printBoard()
     
-    moves = []
+    
     
