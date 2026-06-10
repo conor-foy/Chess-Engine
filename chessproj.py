@@ -38,10 +38,79 @@ class GameState:
 
         print("_______________________")
 
+
+
     def validPawnMoves(self, row, col, moves):
 
-        if col == 1 or col == 8:
-            pass
+        position = self.Board[row][col]
+        colour = self.Board[row][col][0]
+
+        # en passant logic later
+        # if piece on left or right is pawn and that pawn made 
+        # a two move then home pawn can move diagonally behind it and other pawn deleted
+
+        # white moves
+        if colour == "w":
+            # possible two space move for white
+            if row == 6 :
+
+                if self.Board[row - 2][col] == "__" and self.Board[row - 1][col] == "__":
+
+                    moves.append( Moves((row, col), (row - 2, col), self.Board) )
+
+            if self.Board[row - 1][col] == "__":
+
+                moves.append( Moves((row, col), (row - 1, col), self.Board) )
+
+            if col == 0 and self.Board[row - 1][col + 1][0] == "b":
+
+                moves.append( Moves((row, col), (row - 1, col + 1), self.Board) )
+
+            if col == 7 and self.Board[row - 1][col - 1][0] == "b":
+
+                moves.append( Moves((row, col), (row - 1, col - 1), self.Board) )
+
+            if col in range(1, 7):
+
+                if self.Board[row - 1][col - 1][0] == "b":
+
+                    moves.append( Moves((row, col), (row - 1, col - 1), self.Board) )
+                
+                if self.Board[row - 1][col + 1][0] == "b":
+
+                    moves.append( Moves((row, col), (row - 1, col + 1), self.Board) )
+
+        # black moves
+        if colour == "b":
+            # possible two space move for black
+            if row == 1 :
+
+                if self.Board[row + 2][col] == "__" and self.Board[row + 1][col] == "__":
+
+                    moves.append( Moves((row, col), (row + 2, col), self.Board) )
+
+            if self.Board[row + 1][col] == "__":
+
+                moves.append( Moves((row, col), (row + 1, col), self.Board) )
+
+            if col == 0 and self.Board[row + 1][col + 1][0] == "w":
+
+                moves.append( Moves((row, col), (row + 1, col + 1), self.Board) )
+
+            if col == 7 and self.Board[row + 1][col - 1][0] == "w":
+
+                moves.append( Moves((row, col), (row + 1, col - 1), self.Board) )
+
+            if col in range(1, 7):
+
+                if self.Board[row + 1][col - 1][0] == "w":
+
+                    moves.append( Moves((row, col), (row + 1, col - 1), self.Board) )
+                
+                if self.Board[row + 1][col + 1][0] == "w":
+
+                    moves.append( Moves((row, col), (row + 1, col + 1), self.Board) )
+
 
 
     def validRookMoves(self, row, col, moves):
@@ -143,8 +212,40 @@ class GameState:
 
                     moves.append( Moves((row, col), (currRow, currCol), self.Board) )
 
+
     def validBishopMoves(self, row, col, moves):
-        pass
+        
+        diagonals = [(1, -1), (1, 1), (-1, -1), (-1, 1)]
+        startRow = row
+        startCol = col
+        colour = self.Board[row][col][0]
+
+        for rowChange, colChange in diagonals:
+
+            row = startRow
+            col = startCol
+
+            while 0 <= row + rowChange <= 7 and 0 <= col + colChange <= 7:
+
+                position = self.Board[row + rowChange][col + colChange]
+
+                if position == "__":
+
+                    moves.append(Moves( (startRow, startCol), (row + rowChange, col + colChange), self.Board))
+
+                if position != "__" and position[0] != colour:
+
+                    moves.append(Moves( (startRow, startCol), (row + rowChange, col + colChange), self.Board))
+                    break
+                
+                if position[0] == colour:
+
+                    break
+
+                row += rowChange
+                col += colChange
+
+
 
     def validQueenMoves(self, row, col, moves):
         pass
@@ -194,5 +295,8 @@ class GameState:
 
 if __name__ == "__main__":
 
-    game_state = GameState()
-    game_state.printBoard()
+    gameState = GameState()
+    gameState.printBoard()
+    
+    moves = []
+    
