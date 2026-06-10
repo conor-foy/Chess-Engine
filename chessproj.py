@@ -28,6 +28,26 @@ class GameState:
         self.whiteMove = True
         self.moveLog = []
 
+
+    def makeMove(self, move):
+        
+        self.Board[move.startRow][move.startCol] = "__"
+        self.Board[move.newRow][move.newCol] = move.movedPiece
+
+        self.moveLog.append(move)
+        self.whiteMove = not self.whiteMove # swap move colour
+
+
+    def undoMove(self):
+
+        lastMove = self.moveLog.pop()
+
+        self.Board[lastMove.newRow][lastMove.newCol] = lastMove.capturedPiece
+        self.Board[lastMove.startRow][lastMove.startCol] = lastMove.movedPiece
+
+        self.whiteMove = not self.whiteMove
+
+
     def printBoard(self):
 
         print("_______________________")
@@ -257,7 +277,7 @@ class GameState:
                     moves.append(Moves( (row, col), (row + rowChange, col + colChange), self.Board))
 
 
-    def getValidMoves(self):
+    def validMoves(self):
 
         moves = []
 
@@ -296,45 +316,18 @@ class GameState:
         return moves
 
 
-
 if __name__ == "__main__":
 
     gameState = GameState()
+    gameState.printBoard()
 
-    for r in range(8):
-        for c in range(8):
-            gameState.Board[r][c] = "__"
-    
-    gameState.Board[4][4] = "wK"
-    
-    moves = []
-    gameState.validKingMoves(4, 4, moves)
-    print(f"Number of moves: {len(moves)}")
-    for move in moves:
-        print(f"({move.startRow}, {move.startCol}) -> ({move.newRow}, {move.newCol})")
+    moves = gameState.validMoves()
+    gameState.makeMove(moves[0])
+    print("After move:")
+    gameState.printBoard()
 
-    # corner test
-    for r in range(8):
-        for c in range(8):
-            gameState.Board[r][c] = "__"
-
-    gameState.Board[0][0] = "wK"
-    moves = []
-    gameState.validKingMoves(0, 0, moves)
-    print(f"Corner moves: {len(moves)}")  # should be 3
-
-    # blocking test
-    for r in range(8):
-        for c in range(8):
-            gameState.Board[r][c] = "__"
-
-    gameState.Board[4][4] = "wK"
-    gameState.Board[3][3] = "wP"  # friendly - should not appear
-    gameState.Board[5][5] = "bP"  # enemy - should appear
-    moves = []
-    gameState.validKingMoves(4, 4, moves)
-    print(f"Blocking moves: {len(moves)}")  # should be 7
-
+    gameState.undoMove()
+    print("After undo:")
     gameState.printBoard()
     
     
