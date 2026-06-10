@@ -30,21 +30,21 @@ class GameState:
         self.moveLog = []
 
         self.whiteKingPosition = (7, 4)
-        self.blacKingPosition = (0, 4)
+        self.blackKingPosition = (0, 4)
 
 
     def makeMove(self, move):
+
+        if move.movedPiece == "wK":
+
+            self.whiteKingLocation = (move.newRow, move.newCol)
+
+        elif move.movedPiece == "bK":
+
+            self.blackKingLocation = (move.newRow, move.newCol)
         
         self.Board[move.startRow][move.startCol] = "__"
         self.Board[move.newRow][move.newCol] = move.movedPiece
-
-        if self.Board[move.startRow][move.startCol] == "wK":
-
-            self.whiteKingPosition = (move.newRow, move.newCol)
-            
-        elif self.Board[move.startRow][move.startCol] == "bK":
-                
-            self.blackKingPosition = (move.newRow, move.newCol)
 
         self.moveLog.append(move)
         self.whiteMove = not self.whiteMove # swap move colour
@@ -255,7 +255,7 @@ class GameState:
 
         startRow = row
         startCol = col
-        
+
         colour = self.Board[row][col][0]
 
         for rowChange, colChange in diagonals:
@@ -271,12 +271,12 @@ class GameState:
 
                     moves.append(Moves( (startRow, startCol), (row + rowChange, col + colChange), self.Board))
 
-                if position != "__" and position[0] != colour:
+                elif position != "__" and position[0] != colour:
 
                     moves.append(Moves( (startRow, startCol), (row + rowChange, col + colChange), self.Board))
                     break
                 
-                if position[0] == colour:
+                else:
 
                     break
 
@@ -327,19 +327,19 @@ class GameState:
                     if pieceType == "P":
                         self.validPawnMoves(row, col, moves)
 
-                    if pieceType == "R":
+                    elif pieceType == "R":
                         self.validRookMoves(row, col, moves)
 
-                    if pieceType == "N":
+                    elif pieceType == "N":
                         self.validKnightMoves(row, col, moves)
 
-                    if pieceType == "B":
+                    elif pieceType == "B":
                         self.validBishopMoves(row, col, moves)
 
-                    if pieceType == "Q":
+                    elif pieceType == "Q":
                         self.validQueenMoves(row, col, moves)
                         
-                    if pieceType == "K":
+                    elif pieceType == "K":
                         self.validKingMoves(row, col, moves)
 
         return moves
