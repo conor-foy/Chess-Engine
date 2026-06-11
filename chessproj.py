@@ -37,11 +37,11 @@ class GameState:
 
         if move.movedPiece == "wK":
 
-            self.whiteKingLocation = (move.newRow, move.newCol)
+            self.whiteKingPosition = (move.newRow, move.newCol)
 
         elif move.movedPiece == "bK":
 
-            self.blackKingLocation = (move.newRow, move.newCol)
+            self.blackKingPosition = (move.newRow, move.newCol)
         
         self.Board[move.startRow][move.startCol] = "__"
         self.Board[move.newRow][move.newCol] = move.movedPiece
@@ -347,26 +347,23 @@ class GameState:
 
     def attackedSquare(self, row, col):
 
-        # change colour to get valid moves of enemy
-        self.whiteMove = not self.whiteMove
-
         enemyMoves = self.validMoves()
 
-        # change back
+        # change colour
         self.whiteMove = not self.whiteMove
-
+        
         for move in enemyMoves:
 
             if (move.newRow, move.newCol) == (row, col):
-
+                
                 return True
             
         return False
 
 
-    def inCheck(self):
+    def inCheck(self, white):
 
-        if self.whiteMove:
+        if white:
 
             return self.attackedSquare(self.whiteKingPosition[0], self.whiteKingPosition[1])
         
@@ -375,12 +372,33 @@ class GameState:
             return self.attackedSquare(self.blackKingPosition[0], self.blackKingPosition[1])
         
 
+    def safeMoves(self):
+        
+        moves = self.validMoves()
+        colourTurn = self.whiteMove
+        safeMoves = []
+
+        for move in moves:
+
+            self.makeMove(move) # try move
+
+            if not self.inCheck(colourTurn):
+
+                # move does not lead to us being in check
+                safeMoves.append(move)
+
+            # only checking for current state of the board so undo
+            self.undoMove()
+        
+        # all safe moves
+        return safeMoves
 
 
 if __name__ == "__main__":
 
     gameState = GameState()
-    gameState.printBoard()
+    
+    
 
     
     
