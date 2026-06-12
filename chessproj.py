@@ -9,7 +9,16 @@ class Moves:
         self.newCol = NewPosition[1]
         self.movedPiece = Board[self.startRow][self.startCol]
         self.capturedPiece = Board[self.newRow][self.newCol]
+
+    # makes output readable and not memory addresses
+    def __str__(self):
         
+        return f"{self.movedPiece}: ({self.startRow},{self.startCol}) -> ({self.newRow},{self.newCol})"
+    
+    # for lists
+    def __repr__(self):
+
+        return self.__str__()
 
 class GameState:
 
@@ -347,9 +356,11 @@ class GameState:
 
     def attackedSquare(self, row, col):
 
+        # change colour
+        self.whiteMove = not self.whiteMove
+
         enemyMoves = self.validMoves()
 
-        # change colour
         self.whiteMove = not self.whiteMove
         
         for move in enemyMoves:
@@ -376,30 +387,47 @@ class GameState:
         
         moves = self.validMoves()
         colourTurn = self.whiteMove
-        safeMoves = []
+        safeMovesList = []
 
         for move in moves:
 
             self.makeMove(move) # try move
+            
+            # swap turn back before checking
+            self.whiteMove = not self.whiteMove
 
             if not self.inCheck(colourTurn):
 
                 # move does not lead to us being in check
-                safeMoves.append(move)
+                safeMovesList.append(move)
+
+            self.whiteMove = not self.whiteMove
 
             # only checking for current state of the board so undo
             self.undoMove()
         
         # all safe moves
-        return safeMoves
+        return safeMovesList
 
 
+    def isCheckMate(self):
+
+        if self.inCheck(self.whiteMove) and len(self.safeMoves()) == 0:
+
+            return True
+        
+        return False
+
+
+    def isStaleMate(self):
+
+        if not self.inCheck(self.whiteMove) and len(self.safeMoves()) == 0:
+
+            return True
+        
+        return False
+        
 if __name__ == "__main__":
 
     gameState = GameState()
-    
-    
-
-    
-    
     

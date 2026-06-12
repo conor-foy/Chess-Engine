@@ -1,1 +1,1 @@
-True
+            self.whiteMove = not self.whiteMove
