@@ -37,8 +37,12 @@ def move():
             break
 
     if currMove == None:
+        # Differentiates between move not being allowed because in cehck or illegal
+        if gameState.inCheck(gameState.whiteMove):
 
-       return jsonify({"error": "illegal move", "board": gameState.Board, "whiteMove": gameState.whiteMove})
+            return jsonify({"error": "IN CHECK", "board": gameState.Board, "whiteMove": gameState.whiteMove})
+        
+        return jsonify({"error": "Illegal move", "board": gameState.Board, "whiteMove": gameState.whiteMove})
     
     gameState.makeMove(currMove)
 

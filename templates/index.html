@@ -9,8 +9,15 @@
 
     <script>
 
-        function updateTurnDisplay(whiteMove) {
+        function updateStatusDisplay(whiteMove, error) {
+
+            if (error) {
+
+                document.getElementById("turn").textContent = error;
+            } else {
             document.getElementById("turn").textContent = whiteMove ? "White to move" : "Black to move";
+            }
+            
         }
 
         const canvas = document.getElementById("board");
@@ -65,12 +72,14 @@
                 })
                 .then(res => res.json())
                 .then(data => {
+
                     if (data.error) {
                         drawBoard(currentBoard);
+                        updateStatusDisplay(data.whiteMove, data.error)
                     } else {
-                        currentBoard = data;
+                        currentBoard = data.board;
                         drawBoard(data.board);
-                        updateTurnDisplay(data.whiteMove);
+                        updateStatusDisplay(data.whiteMove, null);
                     }
                     selected = null;
                 })
@@ -86,7 +95,7 @@
             .then(data => {
                 currentBoard = data.board;
                 drawBoard(data.board);
-                updateTurnDisplay(data.whiteMove);
+                updateStatusDisplay(data.whiteMove, null);
             });
 
     </script>
