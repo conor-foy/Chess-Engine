@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chess Engine</title>
+</head>
+<body>
+    <canvas id="board"></canvas>
+    <p id="turn"></p>
+
+    <script>
+
+        function updateTurnDisplay(whiteMove) {
+            document.getElementById("turn").textContent = whiteMove ? "White to move" : "Black to move";
+        }
+
+        const canvas = document.getElementById("board");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = 480;
+        canvas.height = 480;
+
+        const squareSize = 60;
+
+        const pieces = {
+            "wK": "♔", "wQ": "♕", "wR": "♖", "wB": "♗", "wN": "♘", "wP": "♙",
+            "bK": "♚", "bQ": "♛", "bR": "♜", "bB": "♝", "bN": "♞", "bP": "♟"
+        };
+        
+        // Last board state
+        let currentBoard = null;
+        // Tracks if piece is selected
+        let selected = null;
+
+        function drawBoard(board) {
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    // Light squares when row + col is even, dark squar otherwise
+                    ctx.fillStyle = (row + col) % 2 === 0 ? "#f0d9b5" : "#b58863";
+                    ctx.fillRect(col * squareSize, row * squareSize, squareSize, squareSize);
+
+                    const piece = board[row][col];
+                    if (piece !== "__") {
+                        ctx.fillStyle = "black";
+                        ctx.font = "40px Arial";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "middle";
+                        ctx.fillText(pieces[piece], col * squareSize + squareSize / 2, row * squareSize + squareSize / 2);
+                    }
+                }
+            }
+        }
+
+        canvas.addEventListener("click", function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const col = Math.floor((e.clientX - rect.left) / squareSize);
+            const row = Math.floor((e.clientY - rect.top) / squareSize);
+
+            if (selected === null) {
+                selected = [row, col];
+            } else {
+                fetch("/move", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ start: selected, end: [row, col] })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        drawBoard(currentBoard);
+                    } else {
+                        currentBoard = data;
+                        drawBoard(data.board);
+                        updateTurnDisplay(data.whiteMove);
+                    }
+                    selected = null;
+                })
+                .catch(() => {
+                    drawBoard(currentBoard);
+                    selected = null;
+                });
+            }
+        });
+
+        fetch("/board")
+            .then(res => res.json())
+            .then(data => {
+                currentBoard = data.board;
+                drawBoard(data.board);
+                updateTurnDisplay(data.whiteMove);
+            });
+
+    </script>
+</body>
+</html>

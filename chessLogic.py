@@ -56,6 +56,7 @@ class GameState:
         self.Board[move.newRow][move.newCol] = move.movedPiece
 
         self.moveLog.append(move)
+
         self.whiteMove = not self.whiteMove # swap move colour
 
 
@@ -430,4 +431,5 @@ class GameState:
 if __name__ == "__main__":
 
     gameState = GameState()
+
     
