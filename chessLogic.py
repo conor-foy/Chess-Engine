@@ -41,6 +41,15 @@ class GameState:
         self.whiteKingPosition = (7, 4)
         self.blackKingPosition = (0, 4)
 
+        pieceValues = {
+                "P": 1,
+                "N": 3,
+                "B": 3,
+                "R": 5,
+                "Q": 9,
+                "K": 0
+            }
+
 
     def makeMove(self, move):
 
@@ -427,6 +436,37 @@ class GameState:
             return True
         
         return False
+
+
+    # Minimax (alpha beta pruning) Algo
+
+    pieceValues = {
+        "P": 1,
+        "N": 3,
+        "B": 3,
+        "R": 5,
+        "Q": 9,
+        "K": 0
+    }
+
+    def boardEval(board):
+
+        score = 0
+
+        for row in board:
+
+            for piece in row:
+
+                if piece == "__":
+
+                    continue
+
+                val = pieceValues[piece[1]]
+
+
+    def minimax(alpha, beta, ):
+
+
         
 if __name__ == "__main__":
 
