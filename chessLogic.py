@@ -41,14 +41,7 @@ class GameState:
         self.whiteKingPosition = (7, 4)
         self.blackKingPosition = (0, 4)
 
-        pieceValues = {
-                "P": 1,
-                "N": 3,
-                "B": 3,
-                "R": 5,
-                "Q": 9,
-                "K": 0
-            }
+        
 
 
     def makeMove(self, move):
@@ -440,16 +433,17 @@ class GameState:
 
     # Minimax (alpha beta pruning) Algo
 
-    pieceValues = {
-        "P": 1,
-        "N": 3,
-        "B": 3,
-        "R": 5,
-        "Q": 9,
-        "K": 0
-    }
+    # Evauluates whether vlack or white is winning
+    def boardEval(self, board):
 
-    def boardEval(board):
+        pieceValues = {
+                "P": 1,
+                "N": 3,
+                "B": 3,
+                "R": 5,
+                "Q": 9,
+                "K": 0
+            }
 
         score = 0
 
@@ -461,11 +455,72 @@ class GameState:
 
                     continue
 
+                # piece value
                 val = pieceValues[piece[1]]
 
+                # Use positive for white
+                if piece[0] == "w":
 
-    def minimax(alpha, beta, ):
+                    score += val
 
+                # Use negative for black
+                else:
+
+                    score -= val
+
+        return score
+
+    def minimax(self, gameState, depth, isMax, alpha, beta):
+
+        if depth == 0:
+
+            return self.boardEval(gameState.Board)
+
+        # All legal moves
+        moves = gameState.safeMoves()
+
+        # If we are maximising the moves (for white)
+        if isMax:
+
+            maximisingScore = float("-inf")
+            maximisingMove = ""
+
+            for move in moves:
+
+                gameState.makeMove(move)
+
+                currScore = self.minimax(gameState, depth - 1, False, 1, 1)
+
+                if currScore > maximisingScore:
+
+                    maximisingScore = currScore
+                    maximisingMove = move
+
+                gameState.undoMove()
+
+            return (maximisingScore, maximisingMove)
+
+
+        # We are minimisng the moves (for black)
+        else:
+
+            minimisingScore = float("inf")
+            minimisingMove = ""
+            
+            for move in moves:
+
+                gameState.makeMove(move)
+
+                currScore = self.minimax(gameState, depth - 1, True, 1, 1)
+
+                if currScore < minimisingScore:
+                
+                    minimisingScore = currScore
+                    minimisingMove = move
+
+                gameState.undoMove()
+
+            return (minimisingScore, minimisingMove)
 
         
 if __name__ == "__main__":
